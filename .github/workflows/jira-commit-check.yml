@@ -1,5 +1,9 @@
 jobs:
   jira-check:
+    on:
+      pull_request:
+        branches:
+        - main
     runs-on: ubuntu-latest
 
     steps:
