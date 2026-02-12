@@ -18,7 +18,7 @@ jobs:
 
           echo "Checking commits in PR..."
 
-          for commit in $(git log origin/${{ github.base_ref }}..HEAD --format=%H); do
+          for commit in $(git log --no-merges ${{ github.event.pull_request.base.sha }}..${{ github.sha }} --format=%H); do
             msg=$(git log -n 1 --format=%s $commit)
 
             echo "Checking commit: $msg"
