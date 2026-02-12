@@ -1,0 +1,30 @@
+jobs:
+  jira-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # IMPORTANT: fetch full history
+
+      - name: Validate JIRA keys in commit messages
+        run: |
+          JIRA_REGEX='^[A-Z]{3,4}-[0-9]+'
+
+          echo "Checking commits in PR..."
+
+          for commit in $(git log origin/${{ github.base_ref }}..HEAD --format=%H); do
+            msg=$(git log -n 1 --format=%s $commit)
+
+            echo "Checking commit: $msg"
+
+            if ! echo "$msg" | grep -E -q "$JIRA_REGEX"; then
+              echo "❌ ERROR: Commit does not start with valid JIRA key"
+              echo "Message: $msg"
+              echo "Expected format example:"
+              echo "FIP-45 fix login issue"
+              exit 1
+            fi
+          done
+
+          echo "✅ All commit messages contain valid JIRA keys."
